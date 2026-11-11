@@ -1,4 +1,5 @@
 {% extends 'master.html' %}
+{% load django_bootstrap5 %}
 {% block title %} Create Book {% endblock %}
 {% block content %}
     <div class="container">
@@ -6,7 +7,7 @@
             <div class="col-sm-4">
                 <form action="{% url 'create_author' %}" method="post">
                     {% csrf_token %}
-                    {{ form.as_p }}
+                    {% bootstrap_form form %}
                     <button class="btn btn-info">Submit</button>
                 </form>
             </div>

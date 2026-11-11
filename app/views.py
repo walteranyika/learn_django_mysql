@@ -41,11 +41,23 @@ def create_author(request):
 
 def create_books(request):
     if request.method == 'POST':
-        form = BookForm(request.POST)
+        form = BookForm(request.POST, request.FILES)
         if form.is_valid():
             book = form.save()
             return redirect('books')
     else:
         form = BookForm()
 
+    return render(request, 'create_books.html', {'form': form})
+
+
+def edit_book(request, pk):
+    book = get_object_or_404(Book, pk=pk)
+    if request.method == 'POST':
+        form = BookForm(request.POST, request.FILES, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('books')
+    else:
+        form = BookForm(instance=book)
     return render(request, 'create_books.html', {'form': form})

@@ -2,7 +2,7 @@
 {% block title %} Books {% endblock %}
 {% block content %}
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center mt-4">
             <div class="col-sm-8">
                 <h1>Books</h1>
                 <table class="table">
@@ -13,6 +13,7 @@
                         <th>Year</th>
                         <th>Created</th>
                         <th>Details</th>
+                        <th>Edit</th>
                     </tr>
                     {% for book in books %}
                         <tr>
@@ -21,7 +22,8 @@
                             <td>{{ book.author }}</td>
                             <td>{{ book.year }}</td>
                             <td>{{ book.created_at | date:'d-m-Y' }}</td>
-                            <td><a href="{% url 'details' book.id  %}" class="btn btn-primary"></a></td>
+                            <td><a href="{% url 'details' book.id  %}" class="btn btn-primary">Details</a></td>
+                            <td><a href="{% url 'edit_book' book.id  %}" class="btn btn-warning">Edit</a></td>
                         </tr>
                     {% endfor %}
                 </table>

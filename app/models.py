@@ -1,5 +1,12 @@
+import os
+import uuid
+
 from django.db import models
 
+def unique_image_path(instance, filename):
+    ext = os.path.splitext(filename)[1].lower()
+    new_filename = f"{uuid.uuid4().hex}{ext}"
+    return os.path.join("cover_images", new_filename)
 
 class Author(models.Model):
     names = models.CharField(max_length=50)
@@ -18,6 +25,7 @@ class Book(models.Model):
     author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name='books')
     year = models.IntegerField()
     cost = models.IntegerField(default=250)
+    cover = models.ImageField(upload_to=unique_image_path, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     def __str__(self):
