@@ -12,8 +12,11 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
@@ -22,9 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3!nmy0j5&zb#=v@c*1(85t^km=rk@qddq8a%&p%9gy)tek#p61'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -37,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app.apps.AppConfig',
     'django_bootstrap5',
+    'storages',
+
 ]
 
 MIDDLEWARE = [
@@ -128,5 +133,81 @@ MAILERS = {
 
 APPEND_SLASH = False
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# MEDIA_URL = "/media/"
+# MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
+if DEBUG:
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            "OPTIONS": {
+                "access_key": os.environ.get("AWS_ACCESS_KEY_ID"),
+                "secret_key": os.environ.get("AWS_SECRET_ACCESS_KEY"),
+                "bucket_name": os.environ.get("AWS_STORAGE_BUCKET_NAME"),
+                "region_name": os.environ.get("AWS_S3_REGION_NAME"),
+                "querystring_auth": False,  # Clean public URLs without signature tokens
+                "file_overwrite": False,    # Prevents accidental overwrites
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+
+LOGS_DIR = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOGS_DIR, exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} [{name}:{lineno}] {message}",
+            "style": "{",
+        },
+        "simple": {
+            "format": "{levelname}: {message}",
+            "style": "{",
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+        "file": {
+            "level": "WARNING",
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(LOGS_DIR, "django.log"),
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB per file
+            "backupCount": 5,             # Keep 5 old log files
+            "formatter": "verbose",
+        },
+    },
+    "loggers": {
+        # Captures Django internal errors (like 500 server errors)
+        "django": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        # Captures S3 / boto3 upload errors if using AWS
+        "boto3": {
+            "handlers": ["console", "file"],
+            "level": "WARNING",
+        },
+        "botocore": {
+            "handlers": ["console", "file"],
+            "level": "WARNING",
+        },
+        # Captures logs from your own Django apps
+        "": {
+            "handlers": ["console", "file"],
+            "level": "INFO",
+        },
+    },
+}
