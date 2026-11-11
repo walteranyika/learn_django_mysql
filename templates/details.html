@@ -1,0 +1,15 @@
+{% extends 'master.html' %}
+{% block title %} Book Details {% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-4">
+                <h3>{{ book.title }}</h3>
+                <h3>{{ book.author.names }}</h3>
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

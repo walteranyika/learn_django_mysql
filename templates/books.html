@@ -1,0 +1,31 @@
+{% extends 'master.html' %}
+{% block title %} Books {% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-8">
+                <h1>Books</h1>
+                <table class="table">
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Author</th>
+                        <th>Year</th>
+                        <th>Created</th>
+                        <th>Details</th>
+                    </tr>
+                    {% for book in books %}
+                        <tr>
+                            <td>{{  forloop.counter  }}</td>
+                            <td>{{ book.title }}</td>
+                            <td>{{ book.author }}</td>
+                            <td>{{ book.year }}</td>
+                            <td>{{ book.created_at | date:'d-m-Y' }}</td>
+                            <td><a href="{% url 'details' book.id  %}" class="btn btn-primary"></a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

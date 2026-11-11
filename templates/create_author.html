@@ -1,0 +1,18 @@
+{% extends 'master.html' %}
+{% block title %} Create Book {% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-sm-4">
+                <form action="{% url 'create_author' %}" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class="btn btn-info">Submit</button>
+                </form>
+            </div>
+            <div class="col-sm-6">
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
