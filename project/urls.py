@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 
 from app import views
 from project import settings
@@ -29,6 +29,10 @@ urlpatterns = [
     path('books/create', views.create_books, name='create_book'),
     path('books/details/<int:id>', views.details, name='details'),
     path('books/edit/<int:pk>', views.edit_book, name='edit_book'),
+    path('accounts/login', views.signin, name='signin'),
+    path('accounts/signup', views.signup, name='signup'),
+    path('accounts/logout', views.signout, name='signout'),
+    path("accounts/", include("django.contrib.auth.urls")),
 ]
 
 

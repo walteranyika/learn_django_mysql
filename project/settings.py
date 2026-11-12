@@ -25,7 +25,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = 'django-insecure-3!nmy0j5&zb#=v@c*1(85t^km=rk@qddq8a%&p%9gy)tek#p61'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -211,3 +211,6 @@ LOGGING = {
         },
     },
 }
+
+LOGIN_REDIRECT_URL = "authors"
+LOGOUT_REDIRECT_URL = "signin"

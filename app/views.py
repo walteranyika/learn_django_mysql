@@ -1,10 +1,14 @@
+from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 
 from app.models import Author, Book
-from app.my_forms import AuthorForm, BookForm
+from app.my_forms import AuthorForm, BookForm, CustomSignUpForm, CustomLoginForm
 
 
+@login_required
 def authors(request):
     authors = Author.objects.all() # select * from authors
     # authors = Author.objects.count() # Select count(*) from authors
@@ -13,7 +17,7 @@ def authors(request):
     # authors = Author.objects.filter(Q(names__icontains='django') & ~Q(email__icontains='django'))
     return render(request, 'authors.html', {'authors': authors})
 
-
+@login_required
 def books(request):
     books = Book.objects.all()
     # books = Book.objects.count()
@@ -21,12 +25,12 @@ def books(request):
     books = Book.objects.filter(author__id=1)
     return render(request, 'books.html',{'books': books})
 
-
+@login_required
 def details(request, id):
     book = get_object_or_404(Book, pk=id)
     return render(request, 'details.html', {'book': book})
 
-
+@login_required
 def create_author(request):
     if request.method == 'POST':
         form = AuthorForm(request.POST)
@@ -38,7 +42,7 @@ def create_author(request):
 
     return render(request, 'create_author.html', {'form': form})
 
-
+@login_required
 def create_books(request):
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES)
@@ -50,7 +54,7 @@ def create_books(request):
 
     return render(request, 'create_books.html', {'form': form})
 
-
+@login_required
 def edit_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
@@ -61,3 +65,33 @@ def edit_book(request, pk):
     else:
         form = BookForm(instance=book)
     return render(request, 'create_books.html', {'form': form})
+
+def signin(request):
+    if request.method == 'POST':
+        form = CustomLoginForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            # next_url = request.GET.get('next','authors')
+            # return redirect(next_url)
+            return redirect('authors')
+    else:
+        form = CustomLoginForm()
+    return render(request, 'registration/login.html', {'form': form})
+
+
+def signup(request):
+    if request.method == 'POST':
+        form = CustomSignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('signin')
+    else:
+        form = CustomSignUpForm()
+    return render(request, 'registration/signup.html', {'form': form})
+
+@login_required
+def signout(request):
+    if request.method == 'POST':
+        logout(request)
+    return redirect('authors')
