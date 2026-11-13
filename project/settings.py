@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 import os
 from pathlib import Path
 
+from django.contrib import messages
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -25,7 +26,7 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = 'django-insecure-3!nmy0j5&zb#=v@c*1(85t^km=rk@qddq8a%&p%9gy)tek#p61'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -214,3 +215,10 @@ LOGGING = {
 
 LOGIN_REDIRECT_URL = "authors"
 LOGOUT_REDIRECT_URL = "signin"
+
+MESSAGE_TAGS = {
+    messages.error : 'danger',
+    messages.success: 'success',
+    messages.info: 'info',
+    messages.warning: 'warning'
+}

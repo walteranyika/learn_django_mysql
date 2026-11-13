@@ -1,5 +1,6 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
@@ -36,6 +37,7 @@ def create_author(request):
         form = AuthorForm(request.POST)
         if form.is_valid():
             author = form.save()
+            messages.success(request, 'Author created successfully')
             return redirect('authors')
     else:
         form = AuthorForm()
@@ -48,6 +50,7 @@ def create_books(request):
         form = BookForm(request.POST, request.FILES)
         if form.is_valid():
             book = form.save()
+            messages.success(request, 'Book created successfully')
             return redirect('books')
     else:
         form = BookForm()
@@ -55,12 +58,14 @@ def create_books(request):
     return render(request, 'create_books.html', {'form': form})
 
 @login_required
+@permission_required('app.change_book', raise_exception=True)
 def edit_book(request, pk):
     book = get_object_or_404(Book, pk=pk)
     if request.method == 'POST':
         form = BookForm(request.POST, request.FILES, instance=book)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Book updated successfully')
             return redirect('books')
     else:
         form = BookForm(instance=book)
@@ -74,6 +79,7 @@ def signin(request):
             login(request, user)
             # next_url = request.GET.get('next','authors')
             # return redirect(next_url)
+            messages.success(request, 'Login successful')
             return redirect('authors')
     else:
         form = CustomLoginForm()
@@ -95,3 +101,6 @@ def signout(request):
     if request.method == 'POST':
         logout(request)
     return redirect('authors')
+
+def custom_404(request, exception):
+    return render(request, "errors/404.html", {"path": request.path},status=404)

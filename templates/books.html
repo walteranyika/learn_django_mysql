@@ -17,13 +17,15 @@
                     </tr>
                     {% for book in books %}
                         <tr>
-                            <td>{{  forloop.counter  }}</td>
+                            <td>{{ forloop.counter }}</td>
                             <td>{{ book.title }}</td>
                             <td>{{ book.author }}</td>
                             <td>{{ book.year }}</td>
                             <td>{{ book.created_at | date:'d-m-Y' }}</td>
-                            <td><a href="{% url 'details' book.id  %}" class="btn btn-primary">Details</a></td>
-                            <td><a href="{% url 'edit_book' book.id  %}" class="btn btn-warning">Edit</a></td>
+                            <td><a href="{% url 'details' book.id %}" class="btn btn-primary">Details</a></td>
+                            {% if perms.app.change_book %}
+                                <td><a href="{% url 'edit_book' book.id %}" class="btn btn-warning">Edit</a></td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
